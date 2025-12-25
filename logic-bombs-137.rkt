@@ -66,27 +66,39 @@
          (%distinct x y z a b c)
          (%combined-total x y z a b c total)]))
 
-(%assert! %can-see ()
-          [('x '[#;(3 1 2) (3 2)
-                 (3 1 2)])]
-          [('y '[(3 3 3)
-                 (3 1 {1 2})
-                 (3 3 3)
-                 (1 2 2)])]
-          [('z '[({1 2} 1 3)
-                 #;(1 3 3) (1 3)
-                 #;({1 2} 1 2) ({1 2} 2)])]
-          [('a '[(3 1 {1 2})])]
-          [('b '[(3 3 1)])]
-          [('c '[(2 1 3)])])
-(%assert! %bomb-count ()
-          [('x 2)]
-          [('y 4)]
-          [('z 3)]
-          [('a 1)]
-          [('b 1)]
-          [('c 1)])
+(define (mk-bomb name count can-see)
+  (%assert! %bomb-count () [(name count)])
+  (%assert! %can-see () [(name can-see)]))
 
+(define (naiive-bombs)
+  (mk-bomb 'x 2 '[(3 1 2)
+                  (3 1 2)])
+  (mk-bomb 'y 4 '[(3 3 3)
+                  (3 1 {1 2})
+                  (3 3 3)
+                  (1 2 2)])
+  (mk-bomb 'z 3 '[({1 2} 1 3)
+                  (1 3 3)
+                  ({1 2} 1 2)])
+  (mk-bomb 'a 1 '[(3 1 {1 2})])
+  (mk-bomb 'b 1 '[(3 3 1)])
+  (mk-bomb 'c 1 '[(2 1 3)]))
+
+(define (refined-bombs)
+  (mk-bomb 'x 2 '[(3 2)
+                  (3 1 2)])
+  (mk-bomb 'y 4 '[(3 3 3)
+                  (3 1 {1 2})
+                  (3 3 3)
+                  (1 2 2)])
+  (mk-bomb 'z 3 '[({1 2} 1 3)
+                  (1 3)
+                  ({1 2} 2)])
+  (mk-bomb 'a 1 '[(3 1 {1 2})])
+  (mk-bomb 'b 1 '[(3 3 1)])
+  (mk-bomb 'c 1 '[(2 1 3)]))
+
+(refined-bombs)
 (define TARGETS 34)
 
 #;(displayln "All possible combinations from start of puzzle")
