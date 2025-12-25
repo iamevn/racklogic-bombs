@@ -78,12 +78,11 @@
          (%=/= a c)
          (%=/= b c)]))
 
-(define TARGET-TOTAL 34)
 ;; given hit numbers for each type of bomb and a number of targets to hit
 ;; can that many of each type of bomb be hit, do they satisify distinct rule, and do they hit the right number of targets?
 (define %hits
-  (%rel (x y z a b c)
-        [(x y z a b c)
+  (%rel (x y z a b c total)
+        [(x y z a b c total)
          (%can-hit 'x x)
          (%can-hit 'y y)
          (%can-hit 'z z)
@@ -91,13 +90,14 @@
          (%can-hit 'b b)
          (%can-hit 'c c)
          (%distinct x y z a b c)
-         (%combined-total x y z a b c TARGET-TOTAL)]))
+         (%combined-total x y z a b c total)]))
+(define TARGETS 34)
 
 #;(displayln "All possible combinations from start of puzzle")
-#;(%find-all (x y z a b c) (%hits x y z a b c))
+#;(%find-all (x y z a b c) (%hits x y z a b c TARGETS))
 #;(displayln "")
 (%find-all (x y z a b c)
-           (%and (%hits x y z a b c)
+           (%and (%hits x y z a b c TARGETS)
                  (%>= x 2)
                  (%>= y 3)
                  (%>= z 1)
