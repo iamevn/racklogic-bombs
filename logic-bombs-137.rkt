@@ -38,25 +38,19 @@
          (%bomb-total 'c c c-total)
          (%is total (+ x-total y-total z-total a-total b-total c-total))]))
 
-;; there's definitely a better way to write this lmao
+;; %true if list has no repeated elements
+(define %distinct/list
+  (%rel (l h t)
+        [('()) %true]
+        [((cons h t))
+         (%not (%member h t))
+         (%distinct/list t)]))
+
+;; %true if x y z a b c are distinct
 (define %distinct
   (%rel (x y z a b c)
         [(x y z a b c)
-         (%=/= x y)
-         (%=/= x z)
-         (%=/= x a)
-         (%=/= x b)
-         (%=/= x c)
-         (%=/= y z)
-         (%=/= y a)
-         (%=/= y b)
-         (%=/= y c)
-         (%=/= z a)
-         (%=/= z b)
-         (%=/= z c)
-         (%=/= a b)
-         (%=/= a c)
-         (%=/= b c)]))
+         (%distinct/list (list x y z a b c))]))
 
 ;; given hit numbers for each type of bomb and a number of targets to hit
 ;; can that many of each type of bomb be hit, do they satisify distinct rule, and do they hit the right number of targets?
