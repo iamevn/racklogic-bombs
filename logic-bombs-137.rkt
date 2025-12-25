@@ -9,7 +9,7 @@
 ;; given a list of numbers/options for numbers (as a list) return set of all possible sums of subsets of those numbers
 ;; e.g. (possible-sums '(1 2 3)) => (set 0 1 2 3 4 5 6)
 ;; when an option is given, use one of but not multiple of the alternatives
-;; e.g. (possible-sums '(1 [10 20])) => (set 0 1 20 21 10 11)
+;; e.g. (possible-sums '(1 {10 20})) => (set 0 1 20 21 10 11)
 (define (possible-sums single-can-see)
   (if (empty? single-can-see)
       (set 0)
@@ -34,28 +34,28 @@
 
 (define possible-hits-test-cases
   `([x
-     ((3 1 2)
-      (3 1 2))
+     [(3 1 2)
+      (3 1 2)]
      (0 1 2 3 4 5 6)]
     [y
-     ((3 3 3)
-      (3 1 (1 2))
+     [(3 3 3)
+      (3 1 {1 2})
       (3 3 3)
-      (1 2 2))
+      (1 2 2)]
      (0 3)]
     [z
-     (((1 2) 1 3)
+     [({1 2} 1 3)
       (1 3 3)
-      ((1 2) 1 2))
+      ({1 2} 1 2)]
      (0 1 3 4)]
     [a
-     ((3 1 (1 2)))
+     [(3 1 {1 2})]
      (0 1 2 3 4 5 6)]
     [b
-     ((3 3 1))
+     [(3 3 1)]
      (0 1 3 4 6 7)]
     [c
-     ((2 3 1))
+     [(2 3 1)]
      (0 1 2 3 4 5 6)]))
 
 (define (lists-match? a b)
@@ -71,59 +71,28 @@
          #;(displayln (~a title " PASS"))
          (displayln (~a title " FAIL: expected " expected ", got " got))))]))
 
+(define %can-see %empty-rel)
+(%assert! %can-see ()
+          [('x '[#;(3 1 2) (3 2)
+                 (3 1 2)])]
+          [('y '[(3 3 3)
+                 (3 1 {1 2})
+                 (3 3 3)
+                 (1 2 2)])]
+          [('z '[({1 2} 1 3)
+                 #;(1 3 3) (1 3)
+                 #;({1 2} 1 2) ({1 2} 2)])]
+          [('a '[(3 1 {1 2})])]
+          [('b '[(3 3 1)])]
+          [('c '[(2 1 3)])])
+
 ;; can a bomb 'x/'y/'z/'a/'b/'c hit given number of targets?
-#;(define %can-hit
-  (%rel (bomb n)
-        [('x n)
-         (%member n (possible-hits
-                     '((3 1 2)
-                       (3 1 2))))]
-        [('y n)
-         (%member n (possible-hits
-                     '((3 3 3)
-                       (3 1 [1 2])
-                       (3 3 3)
-                       (1 2 2))))]
-        [('z n)
-         (%member n (possible-hits
-                     '(([1 2] 1 3)
-                       (1 3 3)
-                       ([1 2] 1 2))))]
-        [('a n)
-         (%member n (possible-hits
-                     '((3 1 [1 2]))))]
-        [('b n)
-         (%member n (possible-hits
-                     '((3 3 1))))]
-        [('c n)
-         (%member n (possible-hits
-                     '((2 1 3))))]))
 (define %can-hit
-  (%rel (bomb n)
-        [('x n)
-         (%member n (possible-hits
-                     '((3 2)
-                       (3 1 2))))]
-        [('y n)
-         (%member n (possible-hits
-                     '((3 3 3)
-                       (3 1 [1 2])
-                       (3 3 3)
-                       (1 2 2))))]
-        [('z n)
-         (%member n (possible-hits
-                     '(([1 2] 3)
-                       (1 3)
-                       ([1 2] 2))))]
-        [('a n)
-         (%member n (possible-hits
-                     '((3 1 [1 2]))))]
-        [('b n)
-         (%member n (possible-hits
-                     '((3 3 1))))]
-        [('c n)
-         (%member n (possible-hits
-                     '((2 1 3))))]))
+  (%rel (bomb n can-see can-hit)
+        [(bomb n)
+         (%can-see bomb can-see)
+         (%is can-hit (possible-hits can-see))
+         (%member n can-hit)]))
 
 ;; how many of each bomb type are present
 (define (bomb-count bomb)
