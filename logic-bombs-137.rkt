@@ -7,19 +7,6 @@
 
 ;; how many targets can each bomb of a type see?
 (define %can-see %empty-rel)
-(%assert! %can-see ()
-          [('x '[#;(3 1 2) (3 2)
-                 (3 1 2)])]
-          [('y '[(3 3 3)
-                 (3 1 {1 2})
-                 (3 3 3)
-                 (1 2 2)])]
-          [('z '[({1 2} 1 3)
-                 #;(1 3 3) (1 3)
-                 #;({1 2} 1 2) ({1 2} 2)])]
-          [('a '[(3 1 {1 2})])]
-          [('b '[(3 3 1)])]
-          [('c '[(2 1 3)])])
 
 ;; can a bomb 'x/'y/'z/'a/'b/'c hit given number of targets?
 (define %can-hit
@@ -31,13 +18,6 @@
 
 ;; how many of a type of bomb are there?
 (define %bomb-count %empty-rel)
-(%assert! %bomb-count ()
-          [('x 2)]
-          [('y 4)]
-          [('z 3)]
-          [('a 1)]
-          [('b 1)]
-          [('c 1)])
 
 ;; if a type of bomb hits a number of targets, how many total do all bombs of that type hit?
 (define %bomb-total
@@ -91,6 +71,28 @@
          (%can-hit 'c c)
          (%distinct x y z a b c)
          (%combined-total x y z a b c total)]))
+
+(%assert! %can-see ()
+          [('x '[#;(3 1 2) (3 2)
+                 (3 1 2)])]
+          [('y '[(3 3 3)
+                 (3 1 {1 2})
+                 (3 3 3)
+                 (1 2 2)])]
+          [('z '[({1 2} 1 3)
+                 #;(1 3 3) (1 3)
+                 #;({1 2} 1 2) ({1 2} 2)])]
+          [('a '[(3 1 {1 2})])]
+          [('b '[(3 3 1)])]
+          [('c '[(2 1 3)])])
+(%assert! %bomb-count ()
+          [('x 2)]
+          [('y 4)]
+          [('z 3)]
+          [('a 1)]
+          [('b 1)]
+          [('c 1)])
+
 (define TARGETS 34)
 
 #;(displayln "All possible combinations from start of puzzle")
