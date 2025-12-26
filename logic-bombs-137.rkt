@@ -1,15 +1,24 @@
 #lang racket
 ;; logic bombs 137
 ;; idk how to get going with this puzzle so I guess it's time to learn racklog https://docs.racket-lang.org/racklog/
-
 (require racklog)
 (require "possible-hits.rkt")
 
-;; how many of a type of bomb are there?
-(define %bomb-count %empty-rel)
+;; constructor for a list representing a type of bomb, has a name, count, and list of how many targets each bomb of that type can see
+(define (bomb name count can-see)
+  (list 'bomb name count can-see))
 
-;; how many targets can each bomb of a type see?
-(define %can-see %empty-rel)
+(define %name
+  (%rel (name)
+        [((bomb name (_) (_)) name)]))
+
+(define %bomb-count
+  (%rel (count)
+        [((bomb (_) count (_)) count)]))
+
+(define %can-see
+  (%rel (can-see)
+        [((bomb (_) (_) can-see) can-see)]))
 
 ;; can a bomb hit given number of targets?
 (define %can-hit
@@ -50,35 +59,25 @@
          (%combined-total bombs hits target-count)]))
 
 ;;;;;;;; solve it ;;;;;;;;;
-
-(%assert! %bomb-count ()
-          [('x 2)]
-          [('y 4)]
-          [('z 3)]
-          [('a 1)]
-          [('b 1)]
-          [('c 1)])
-
-(%assert! %can-see ()
-          [('x '[(3 2)
-                 (3 1 2)])]
-          [('y '[(3 3 3)
-                 (3 1 {1 2})
-                 (3 3 3)
-                 (1 2 2)])]
-          [('z '[({1 2} 1 3)
-                 (1 3)
-                 ({1 2} 2)])]
-          [('a '[(3 1 {1 2})])]
-          [('b '[(3 3 1)])]
-          [('c '[(2 1 3)])])
-
 (%find-all (x y z a b c)
-           (%and (%hits 34
-                        '(x y z a b c)
-                        (list x y z a b c))
-                 (%>= x 2)
-                 (%>= y 3)
-                 (%>= z 1)
-                 (%>= a 2)
-                 (%>= c 2)))
+           (let ([target-count 34]
+                 [bombs (list (bomb 'x 2 '[(3 2)
+                                           (3 1 2)])
+                              (bomb 'y 4 '[(3 3 3)
+                                           (3 1 {1 2})
+                                           (3 3 3)
+                                           (1 2 2)])
+                              (bomb 'z 3 '[({1 2} 1 3)
+                                           (1 3)
+                                           ({1 2} 2)])
+                              (bomb 'a 1 '[(3 1 {1 2})])
+                              (bomb 'b 1 '[(3 3 1)])
+                              (bomb 'c 1 '[(2 1 3)]))])
+             (%and (%hits target-count
+                          bombs
+                          (list x y z a b c))
+                   (%>= x 2)
+                   (%>= z 1)
+                   (%>= y 3)
+                   (%>= a 2)
+                   (%>= c 2))))
