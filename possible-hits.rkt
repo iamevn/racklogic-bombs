@@ -48,7 +48,8 @@
 ;; given a list of what each bomb of the same type can see, return set of
 ;; possible target values for that type of bomb (see possible-sums above or test cases for input format)
 (define (possible-hit-set can-see)
-  (apply set-intersect (map possible-sums can-see)))
+  (if (empty? can-see) (set 0)
+      (apply set-intersect (map possible-sums can-see))))
 
 ;; helper producing a list instead of a set
 (define possible-hits (compose set->list possible-hit-set))
@@ -56,27 +57,28 @@
 
 (module+ test
   (test-possible-hit-set? "x example"
-                       '[(1 2 3)
-                         (3 1 2)]
-                       (set 0 1 2 3 4 5 6))
+                          '[(1 2 3)
+                            (3 1 2)]
+                          (set 0 1 2 3 4 5 6))
   (test-possible-hit-set? "y example"
-                       '[(3 3 3)
-                         (3 1 {1 2})
-                         (3 3 3)
-                         (1 2 2)]
-                       (set 0 3))
+                          '[(3 3 3)
+                            (3 1 {1 2})
+                            (3 3 3)
+                            (1 2 2)]
+                          (set 0 3))
   (test-possible-hit-set? "z example"
-                       '[({1 2} 1 3)
-                         (1 3 3)
-                         ({1 2} 1 2)]
-                       (set 0 1 3 4))
+                          '[({1 2} 1 3)
+                            (1 3 3)
+                            ({1 2} 1 2)]
+                          (set 0 1 3 4))
   (test-possible-hit-set? "a example"
-                       '[(3 1 {1 2})]
-                       (set 0 1 2 3 4 5 6))
+                          '[(3 1 {1 2})]
+                          (set 0 1 2 3 4 5 6))
   (test-possible-hit-set? "b example"
-                       '[(3 3 1)]
-                       (set 0 1 3 4 6 7))
-  
+                          '[(3 3 1)]
+                          (set 0 1 3 4 6 7))
   (test-possible-hit-set? "c example"
-                       '[(2 3 1)]
-                       (set 0 1 2 3 4 5 6)))
+                          '[(2 3 1)]
+                          (set 0 1 2 3 4 5 6))
+
+  (test-possible-hit-set? "can't see anything" '[] (set 0)))
