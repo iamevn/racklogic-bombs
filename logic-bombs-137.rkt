@@ -28,11 +28,11 @@
 
 ;; %true if list has no repeated elements
 (define %distinct
-  (%rel (l h t)
+  (%rel (head tail)
         [('()) %true]
-        [((cons h t))
-         (%not (%member h t))
-         (%distinct t)]))
+        [((cons head tail))
+         (%not (%member head tail))
+         (%distinct tail)]))
 
 ;; for a list of bombs and a list of how many targets that type of bomb hits, how many total targets are hit?
 (define %combined-total
@@ -43,7 +43,7 @@
 
 ;; number of targets, list of bombs, list of hits each bomb does
 (define %hits
-  (%rel (target-count bombs hits totals)
+  (%rel (target-count bombs hits)
         [(target-count bombs hits)
          (%andmap %can-hit bombs hits)
          (%distinct hits)
@@ -58,6 +58,7 @@
           [('a 1)]
           [('b 1)]
           [('c 1)])
+
 (%assert! %can-see ()
           [('x '[(3 2)
                  (3 1 2)])]
