@@ -1,0 +1,50 @@
+#lang racket
+;; idk how to solve this so I guess it's time to learn racklog https://docs.racket-lang.org/racklog/
+(require racklog)
+(require "racklog-helpers.rkt")
+(require "racklogic-bombs.rkt")
+
+(define (run)
+  (%find-all (x y z n a b c)
+             (%hits 21
+                    (list (bomb 'x 1 '([{1 2 4} {1 2 3}]))
+                          (bomb 'y 1 '([{1 3 4} {1 2 3}]))
+                          (bomb 'z 1 '([1 1 {2 3} {2 3}]))
+                          (bomb 'n 2 '([] []))
+                          (bomb 'a 1 '([{1 3 4} {1 2 3}]))
+                          (bomb 'b 1 '([{1 2 4} {1 2 3}]))
+                          (bomb 'c 1 '([1 1])))
+                    (list x y z n a b c))
+             (%>= z 4)
+             (%implies (%= c 3)
+                       (%and (%= a 1)
+                             (%= b 4)))
+             (%implies (%= a 1)
+                       (%and (%>= b 4)
+                             (%>= y 3)
+                             (%< z 7)))
+             (%implies (%= b 1)
+                       (%and (%>= a 3)
+                             (%>= x 4)
+                             (%< z 8)))
+             (%implies (%= x 1)
+                       (%and (%>= y 3)
+                             (%>= b 3)))
+             (%implies (%= y 1)
+                       (%and (%>= x 4)
+                             (%>= a 3)
+                             (%< z 8)))))
+
+(define (Q res v)
+  (let* ([foundset (for/set ([l res])
+                     (cdr (assoc v l)))]
+         [found (set->list foundset)]
+         [only-one? (equal? (length found) 1)])
+    (if only-one? (car found) foundset)))
+
+(define res (run))
+res
+(when (not (equal? res '(#false)))
+  (displayln (~a "Found " (length res) " solutions with possible values"))
+  (for ([v '(x y z n a b c)])
+    (displayln (~a v ": " (Q res v)))))

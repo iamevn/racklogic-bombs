@@ -2,6 +2,7 @@
 ;; goals for finding and narrowing-down potential bomb values for logic bombs puzzles
 (require racklog)
 (require "possible-hits.rkt")
+(require "racklog-helpers.rkt")
 
 (provide (all-defined-out))
 
@@ -35,14 +36,6 @@
         [(bomb hit total-hit)
          (%bomb-count bomb count)
          (%is total-hit (* hit count))]))
-
-;; %true if list has no repeated elements
-(define %distinct
-  (%rel (head tail)
-        [('()) %true]
-        [((cons head tail))
-         (%not (%member head tail))
-         (%distinct tail)]))
 
 ;; for a list of bombs and a list of how many targets that type of bomb hits, how many total targets are hit?
 (define %combined-total
