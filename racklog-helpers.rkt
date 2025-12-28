@@ -34,20 +34,23 @@
          (%not (%goal x))
          (%filter %goal xs ys)]))
 
+(define %remove-all
+  (%rel (lst x y xs without-x)
+        [((_) '() '())]
+        [(x (cons x xs) without-x)
+         (%remove-all x xs without-x)]
+        [(x (cons y xs) (cons y without-x))
+         (%/= x y)
+         (%remove-all x xs without-x)]))
+
 (define %implies
   (λ (%P %Q)
     (%if-then-else %P %Q
                    (%not %P))))
 
 ;;;;;; working on these
-(define %remove-all
-  (%rel (lst x xs removed)   
-        [(x lst lst)
-         (%not (%member x lst))]
-        [(x (cons x xs) removed)
-         (%remove-all  x xs)]))
 
-(define %singles
+#;(define %singles
   (%rel (lst just-singles x xs)
         [('() '())]
         [(lst lst)
